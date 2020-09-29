@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">QueensAndKings</string>
+    <string name="boardsize_title">Boardsize:</string>
+    <string name="number_hint">0</string>
+    <string name="amount_of_queens_title">Amount of Queens:</string>
+    <string name="amount_of_kings_title">Amount of Kings:</string>
+    <string name="queens_counter_title">Queens:</string>
+    <string name="queens_and_kings_title"><![CDATA[Queens & Kings:]]></string>
+    <string name="calculate_btn_text">Calculate!</string>
+    <string name="low_mem_msg">WARNING! Low low memory alert. Try smaller args...</string>
+    <string name="cancel_btn_text">Cancel</string>
+</resources>
