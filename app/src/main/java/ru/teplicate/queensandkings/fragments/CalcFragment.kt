@@ -93,8 +93,8 @@ class CalcFragment : Fragment() {
                         calcBtn = R.drawable.inactive_button_back,
                         cancelBtn = R.drawable.cancel_button_back
                     )
-                    binding.queensAndKingsCountVar = null
-                    binding.queensCountVar = null
+                    binding.queensAndKingsCountVar = resources.getString(R.string.calc_in_prog_text)
+                    binding.queensCountVar = resources.getString(R.string.calc_in_prog_text)
                     binding.executePendingBindings()
                 }
                 CalcState.CANCEL -> {
