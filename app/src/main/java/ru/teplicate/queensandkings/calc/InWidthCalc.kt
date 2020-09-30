@@ -61,7 +61,6 @@ object InWidthCalc {
 
                 if (isCrossing(q, v, horPoz)) {
                     crossing = true
-                    //плохо, выходим из цикла проверки пересечений, нуно искать дальше
                     break
                 }
             }
