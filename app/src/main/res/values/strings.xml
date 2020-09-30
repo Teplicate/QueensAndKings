@@ -1,17 +1,17 @@
 <resources>
     <string name="app_name">QueensAndKings</string>
-    <string name="boardsize_title">Boardsize:</string>
+    <string name="boardsize_title">Board size:</string>
     <string name="number_hint">0</string>
     <string name="amount_of_queens_title">Amount of Queens:</string>
     <string name="amount_of_kings_title">Amount of Kings:</string>
     <string name="queens_counter_title">Queens:</string>
     <string name="queens_and_kings_title"><![CDATA[Queens & Kings:]]></string>
     <string name="calculate_btn_text">Calculate!</string>
-    <string name="low_mem_msg">WARNING! Low low memory alert. Try smaller args...</string>
+    <string name="low_mem_msg">Feeling bad... Gonna puke to free ram...</string>
     <string name="cancel_btn_text">Cancel</string>
     <string name="cancelling_calc_msg">Cancelling calculation...</string>
     <string name="done_calc_msg">Done!</string>
-    <string name="starting_calc_msg">Launching calculcation</string>
+    <string name="starting_calc_msg">Launching calculation</string>
     <string name="cancelled_calc_msg">Cancelled successfully</string>
     <string name="cancelled_str">Cancelled</string>
     <string name="calc_in_prog_text">Calculating...</string>
