@@ -15,6 +15,7 @@ class CalcViewModel : ViewModel() {
     val calcState: LiveData<CalcState>
         get() = _calcState
 
+    var job: Job? = null
     var queensCount: Int? = null
     var queensAndKingsCount: Int? = null
 
@@ -32,20 +33,26 @@ class CalcViewModel : ViewModel() {
     }
 
     fun cancelCalcJob() {
-        viewModelScope.cancel()
+        job!!.cancel(CancellationException("Stop"))
+        InWidthCalc.stop()
+        _calcState.value = CalcState.CANCELLED
     }
 
     fun calc(boardSize: Int, queens: Int, kings: Int) {
         Log.i(className, "Launching calc")
-        val (queensRes, kingsRes)
-                = InWidthCalc.calcCombinations(
-            boardSize = boardSize,
-            queens = queens,
-            kings = kings
-        )
-        queensAndKingsCount = kingsRes
-        queensCount = queensRes
-        calcDone()
+
+        job = viewModelScope.launch {
+            val (queensRes, kingsRes) = withContext(Dispatchers.Default) {
+                InWidthCalc.calcCombinations(
+                    boardSize = boardSize,
+                    queens = queens,
+                    kings = kings
+                )
+            }
+            queensAndKingsCount = kingsRes
+            queensCount = queensRes
+            calcDone()
+        }
     }
 }
 
@@ -53,5 +60,6 @@ enum class CalcState {
     IN_PROGRESS,
     DONE,
     CANCEL,
-    NONE
+    NONE,
+    CANCELLED
 }

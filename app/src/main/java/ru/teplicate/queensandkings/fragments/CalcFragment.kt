@@ -41,8 +41,9 @@ class CalcFragment : Fragment() {
             viewModel.calc(boardSize, queens, kings)
         }
 
-        /*binding.queensAndKingsCount.visibility = View.GONE
-        binding.queensCount.visibility = View.GONE*/
+        binding.cancelButton.setOnClickListener {
+            viewModel.cancelCalc()
+        }
 
         val viewModel by viewModels<CalcViewModel>()
         this.viewModel = viewModel
@@ -69,18 +70,14 @@ class CalcFragment : Fragment() {
 
     override fun onLowMemory() {
         super.onLowMemory()
-        Toast.makeText(
-            requireContext(),
-            resources.getString(R.string.low_mem_msg),
-            Toast.LENGTH_LONG
-        )
-            .show()
+        Util.showToast(R.string.low_mem_msg, requireContext())
     }
 
     private fun getCalcStateObserver(): Observer<CalcState> {
         return Observer { calcState ->
             when (calcState) {
                 CalcState.DONE -> {
+                    Util.showToast(R.string.done_calc_msg, requireContext())
                     binding.queensCountVar = viewModel.queensCount?.toString()
                     binding.queensAndKingsCountVar = viewModel.queensAndKingsCount?.toString()
                     binding.executePendingBindings()
@@ -88,23 +85,31 @@ class CalcFragment : Fragment() {
                         calcBtn = R.drawable.button_back,
                         cancelBtn = R.drawable.inactive_button_back
                     )
-                    //remove prog bar
                 }
 
                 CalcState.IN_PROGRESS -> {
+                    Util.showToast(R.string.starting_calc_msg, requireContext())
                     switchBtns(
                         calcBtn = R.drawable.inactive_button_back,
                         cancelBtn = R.drawable.cancel_button_back
                     )
-                    //set prog bar
+                    binding.queensAndKingsCountVar = null
+                    binding.queensCountVar = null
+                    binding.executePendingBindings()
                 }
                 CalcState.CANCEL -> {
+                    Util.showToast(R.string.cancelling_calc_msg, requireContext())
                     viewModel.cancelCalcJob()
                     switchBtns(
                         calcBtn = R.drawable.button_back,
                         cancelBtn = R.drawable.inactive_button_back
                     )
-                    //remove prog bar
+                }
+                CalcState.CANCELLED -> {
+                    Util.showToast(R.string.cancelled_calc_msg, requireContext())
+                    binding.queensCountVar = resources.getString(R.string.cancelled_str)
+                    binding.queensAndKingsCountVar = resources.getString(R.string.cancelled_str)
+                    binding.executePendingBindings()
                 }
                 else -> {
 

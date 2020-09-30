@@ -1,6 +1,7 @@
 package ru.teplicate.queensandkings.calc
 
 import android.util.Log
+import java.lang.IllegalStateException
 import kotlin.math.abs
 import kotlin.math.sqrt
 
@@ -14,31 +15,42 @@ object InWidthCalc {
     private lateinit var kings: IntArray
     private var queenCounter = 0
     private var queensAndKignsCounter = 0
+    var stop = false
 
-    fun calcCombinations(boardSize: Int, queens: Int, kings: Int): Pair<Int, Int> {
+    fun calcCombinations(boardSize: Int, queens: Int, kings: Int): Pair<Int?, Int?> {
         Log.i(className, "In calc")
         setParams(boardSize, queens, kings)
-        solve()
+        return try {
+            solve()
+            queenCounter to queensAndKignsCounter
+        } catch (ise: IllegalStateException) {
+            Log.i(className, "Stopped")
+            null to null
+        }
+    }
 
-        return queenCounter to queensAndKignsCounter
+    fun stop() {
+        stop = true
     }
 
     private fun setParams(boardSize: Int, queens: Int, kings: Int) {
         this.boardSize = boardSize
         this.queenSize = queens
         this.kingSize = kings
+        stop = false
         this.queens = IntArray(boardSize) { 0 }
         this.kings = IntArray(boardSize) { 0 }
         queenCounter = 0
         queensAndKignsCounter = 0
     }
 
+    @Throws(IllegalStateException::class)
     fun solve(queen: Int = 0, horPoz: Int = 0): Boolean {
         if (queen == queenSize) {
             return true
         } else if (horPoz == boardSize) {
             return false
-        }
+        } else if (stop) throw IllegalStateException("Stopped")
 
         for (v in 0 until boardSize) { //vert
             var crossing = false

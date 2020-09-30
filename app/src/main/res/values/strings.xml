@@ -9,4 +9,9 @@
     <string name="calculate_btn_text">Calculate!</string>
     <string name="low_mem_msg">WARNING! Low low memory alert. Try smaller args...</string>
     <string name="cancel_btn_text">Cancel</string>
+    <string name="cancelling_calc_msg">Cancelling calculation...</string>
+    <string name="done_calc_msg">Done!</string>
+    <string name="starting_calc_msg">Launching calculcation</string>
+    <string name="cancelled_calc_msg">Cancelled successfully</string>
+    <string name="cancelled_str">Cancelled</string>
 </resources>
