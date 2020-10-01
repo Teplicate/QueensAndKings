@@ -1,18 +1,15 @@
 package ru.teplicate.queensandkings.calc
 
 import android.util.Log
-import java.lang.IllegalStateException
 import kotlin.math.abs
-import kotlin.math.sqrt
 
 object InWidthCalc {
     private val className = this::class.java.name
-    val sqrtTwo = sqrt(2.0)
     private var boardSize: Int = 0
     private var queenSize: Int = 0
     private var kingSize: Int = 0
-    private lateinit var queens: IntArray
-    private lateinit var kings: IntArray
+    private lateinit var queens: Array<MPair>
+    private lateinit var kings: Array<MPair>
     private var queenCounter = 0
     private var queensAndKignsCounter = 0
     var stop = false
@@ -21,7 +18,9 @@ object InWidthCalc {
         Log.i(className, "In calc")
         setParams(boardSize, queens, kings)
         return try {
-            solve()
+            if (queens != 0)
+                solve()
+            else solveKings()
             queenCounter to queensAndKignsCounter
         } catch (ise: IllegalStateException) {
             Log.i(className, "Stopped")
@@ -38,119 +37,124 @@ object InWidthCalc {
         this.queenSize = queens
         this.kingSize = kings
         stop = false
-        this.queens = IntArray(boardSize) { 0 }
-        this.kings = IntArray(boardSize) { 0 }
+        this.queens = Array(queenSize) { MPair(0, 0) }
+        this.kings = Array(kingSize) { MPair(0, 0) }
         queenCounter = 0
         queensAndKignsCounter = 0
     }
 
     @Throws(IllegalStateException::class)
-    fun solve(queen: Int = 0, horPoz: Int = 0): Boolean {
-        if (queen == queenSize) {
-            return true
-        } else if (horPoz == boardSize) {
-            return false
-        } else if (stop) throw IllegalStateException("Stopped")
-
-        for (v in 0 until boardSize) { //vert
-            var crossing = false
-
-            for (q in 0 until horPoz) {
-                if (queens[q] == -1) //разрыв поэтому проверка пересечений не нужна
-                    continue
-
-                if (isCrossing(q, v, horPoz)) {
-                    crossing = true
-                    break
-                }
+    fun solve(queen: Int = 0, horPoz: Int = 1): Boolean {
+        when {
+            queen == queenSize -> {
+                queenCounter++
+                return true
             }
-
-            if (!crossing) {
-                queens[horPoz] = v
-                val status = solve(queen + 1, horPoz + 1)
-
-                if (status) {
-                    queenCounter++
-                    solveKings(queensHorPoz = horPoz)
-                }
+            horPoz > boardSize -> {
+                return false
             }
+            stop -> throw IllegalStateException("Stopped")
+            else -> {
+                for (v in 1..boardSize) {
+                    var crosses = false
+                    for (q in 0 until queen) {
+                        if (isQueenCrossing(q, v, horPoz)) {
+                            crosses = true
+                            break
+                        }
+                    }
 
-            for (r in horPoz until boardSize) {
-                queens[r] = 0
+                    if (!crosses) {
+                        queens[queen].x = horPoz
+                        queens[queen].y = v
+                        val solved = solve(queen + 1, horPoz + 1)
+
+                        if (solved) {
+                            solveKings()
+                        }
+
+                        queens[queen].reset()
+                    }
+                }
+
+
+                return solve(queen, horPoz + 1)
             }
         }
 
-        queens[horPoz] =
-            -1 //места по вертикали закончились, помечаем здесь разрыв и проверяем места в следующем столбце
 
-        return solve(queen, horPoz + 1)
     }
 
-    private fun solveKings(king: Int = 0, horPoz: Int = 0, queensHorPoz: Int): Boolean {
-        if (king == kingSize) {
-            return true
-        } else if (horPoz == boardSize) {
-            return false
-        }
-
-        for (v in 0 until boardSize) {
-            var crossing = false
-
-            for (q in 0..queensHorPoz) {
-                if (queens[q] == -1)
-                    continue
-
-                if (isCrossing(q, v, horPoz)) {
-                    crossing = true
-                    break
-                }
+    @Throws(IllegalStateException::class)
+    private fun solveKings(king: Int = 0, horPos: Int = 1, verPos: Int = 1): Boolean {
+        when {
+            king == kingSize -> {
+                queensAndKignsCounter++
+                return true
             }
+            horPos > boardSize -> {
+                return false
+            }
+            stop -> throw IllegalStateException("Stopped")
+            else -> {
+                var crosses = false
 
-            if (!crossing) {
-                //проверка с другими королями
-                for (k in 0 until horPoz) {
-                    if (kings[k] == -1)
-                        continue
-
-                    if (isKingCrossing(k, v, horPoz)) {
-                        crossing = true
+                for (q in 0 until queenSize) {
+                    if (isQueenCrossing(q, verPos, horPos)) {
+                        crosses = true
                         break
                     }
                 }
 
-                if (!crossing) {
-                    kings[horPoz] = v
-                    val status = solveKings(king + 1, horPoz + 1, queensHorPoz)
-
-                    if (status) {
-                        queensAndKignsCounter++
+                if (!crosses) {
+                    for (k in 0 until king) {
+                        if (isKingCrossing(k, verPos, horPos)) {
+                            crosses = true
+                            break
+                        }
                     }
                 }
-            }
 
-            for (t in horPoz until boardSize) {
-                kings[t] = 0
+                if (!crosses) {
+                    kings[king].x = horPos
+                    kings[king].y = verPos
+                    if (verPos == boardSize)
+                        solveKings(king + 1, horPos + 1, 1)
+                    else solveKings(king + 1, horPos, verPos + 1)
+                }
+
+                kings[king].reset()
+
+                return if (verPos == boardSize) {
+                    solveKings(king, horPos + 1, 1)
+                } else solveKings(king, horPos, verPos + 1)
             }
         }
 
-        kings[horPoz] = -1
-
-        return solveKings(king, horPoz + 1, queensHorPoz)
     }
 
-    private fun isKingCrossing(k: Int, v: Int, king: Int): Boolean {
-        //horizontally
-        //vertically
-        //если на одной вертикали, то проверить длину вектора
-        return abs(k - king) <= 1 || abs(kings[k] - v) <= 1 || if (abs(k - king) == abs(kings[k] - v)) {
-            val x = k - king
-            val y = kings[k] - v
-            val length = sqrt(x * x * 1.0 + y * y * 1.0)
-            length <= sqrtTwo
-        } else false
+    private fun isQueenCrossing(q: Int, verPoz: Int, horPoz: Int): Boolean {
+        if (!queens[q].isSet())
+            return false
+
+        return queens[q].x == horPoz || queens[q].y == verPoz || (abs(queens[q].y - verPoz) == abs(
+            queens[q].x - horPoz
+        ))
     }
 
-    private fun isCrossing(q: Int, vertical: Int, horizon: Int): Boolean {
-        return (q == horizon) || (queens[q] == vertical) || (abs(q - horizon) == abs(queens[q] - vertical))
+    private fun isKingCrossing(k: Int, verPos: Int, horPos: Int): Boolean {
+        if (!kings[k].isSet())
+            return false
+
+        return (abs(kings[k].x - horPos) <= 1 && abs(kings[k].y - verPos) <= 1)
+    }
+
+    class MPair(var x: Int, var y: Int) {
+        fun isSet() = (this.x != 0 && this.y != 0)
+
+        fun reset() {
+            this.x = 0
+            this.y = 0
+        }
     }
 }
