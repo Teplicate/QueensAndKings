@@ -81,8 +81,6 @@ object InWidthCalc {
                 return solve(queen, horPoz + 1)
             }
         }
-
-
     }
 
     @Throws(IllegalStateException::class)
