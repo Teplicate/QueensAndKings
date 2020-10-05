@@ -14,6 +14,7 @@ object InWidthCalc {
     private var queensAndKignsCounter = 0
     var stop = false
 
+    @Throws(StackOverflowError::class)
     fun calcCombinations(boardSize: Int, queens: Int, kings: Int): Pair<Int?, Int?> {
         Log.i(className, "In calc")
         setParams(boardSize, queens, kings)
@@ -43,7 +44,7 @@ object InWidthCalc {
         queensAndKignsCounter = 0
     }
 
-    @Throws(IllegalStateException::class)
+    @Throws(IllegalStateException::class, StackOverflowError::class)
     fun solve(queen: Int = 0, horPoz: Int = 1): Boolean {
         when {
             queen == queenSize -> {
@@ -83,7 +84,7 @@ object InWidthCalc {
         }
     }
 
-    @Throws(IllegalStateException::class)
+    @Throws(IllegalStateException::class, StackOverflowError::class)
     private fun solveKings(king: Int = 0, horPos: Int = 1, verPos: Int = 1): Boolean {
         when {
             king == kingSize -> {

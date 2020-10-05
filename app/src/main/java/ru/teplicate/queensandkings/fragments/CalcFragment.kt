@@ -111,6 +111,11 @@ class CalcFragment : Fragment() {
                     binding.queensAndKingsCountVar = resources.getString(R.string.cancelled_str)
                     binding.executePendingBindings()
                 }
+                CalcState.STACK_OVERFLOW -> {
+                    binding.queensCountVar = resources.getString(R.string.stack_overflow)
+                    binding.queensAndKingsCountVar = resources.getString(R.string.stack_overflow)
+                    binding.executePendingBindings()
+                }
                 else -> {
 
                 }

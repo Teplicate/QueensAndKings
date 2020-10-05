@@ -42,17 +42,28 @@ class CalcViewModel : ViewModel() {
         Log.i(className, "Launching calc")
 
         job = viewModelScope.launch {
-            val (queensRes, kingsRes) = withContext(Dispatchers.Default) {
-                InWidthCalc.calcCombinations(
-                    boardSize = boardSize,
-                    queens = queens,
-                    kings = kings
-                )
+            val pair = withContext(Dispatchers.Default) {
+                try {
+                    InWidthCalc.calcCombinations(
+                        boardSize = boardSize,
+                        queens = queens,
+                        kings = kings
+                    )
+                } catch (e: StackOverflowError) {
+                    null
+                }
             }
-            queensAndKingsCount = kingsRes
-            queensCount = queensRes
-            calcDone()
+
+            pair?.let {
+                queensAndKingsCount = it.second
+                queensCount = it.first
+                calcDone()
+            } ?: stackOverflow()
         }
+    }
+
+    private fun stackOverflow() {
+        _calcState.value = CalcState.STACK_OVERFLOW
     }
 }
 
@@ -61,5 +72,6 @@ enum class CalcState {
     DONE,
     CANCEL,
     NONE,
-    CANCELLED
+    CANCELLED,
+    STACK_OVERFLOW
 }
