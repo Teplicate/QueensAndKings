@@ -115,6 +115,10 @@ class CalcFragment : Fragment() {
                     binding.queensCountVar = resources.getString(R.string.stack_overflow)
                     binding.queensAndKingsCountVar = resources.getString(R.string.stack_overflow)
                     binding.executePendingBindings()
+                    switchBtns(
+                        calcBtn = R.drawable.button_back,
+                        cancelBtn = R.drawable.inactive_button_back
+                    )
                 }
                 else -> {
 
